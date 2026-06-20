@@ -10,35 +10,36 @@ class ConfessionController
     public function submit(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            $this->redirect('index.html');
+            $this->redirect('index.php');
         }
 
-        $content = trim($_POST['moment'] ?? '');
+        $content  = trim($_POST['moment']   ?? '');
+        $location = trim($_POST['location'] ?? '');
 
-        $errors = $this->validate($content);
+        $errors = $this->validate($content, $location);
 
         if (!empty($errors)) {
-            http_response_code(422);
-            $this->redirect('index.html#confessions');
+            $this->redirect('index.php#confessions');
         }
 
         try {
             Confession::create([
-                'location' => 'Anoniem',
+                'location' => $location,
                 'content'  => $content,
             ]);
         } catch (\Exception $e) {
-            http_response_code(500);
-            $this->redirect('index.html#confessions');
+            $this->redirect('index.php#confessions');
         }
 
-        $this->redirect('index.html?confession=success#confessions');
+        $this->redirect('index.php?confession=success#confessions');
     }
 
-    private function validate(string $content): array
+    private function validate(string $content, string $location): array
     {
         $errors = [];
+        if ($location === '') {
+            $errors[] = 'Stad is verplicht.';
+        }
         if ($content === '') {
             $errors[] = 'Jouw ochtendmoment is verplicht.';
         }

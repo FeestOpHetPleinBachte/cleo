@@ -12,7 +12,7 @@ class ContactController
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            $this->redirect('index.html');
+            $this->redirect('index.php');
         }
 
         $name     = trim($_POST['name']     ?? '');
@@ -24,7 +24,7 @@ class ContactController
 
         if (!empty($errors)) {
             http_response_code(422);
-            $this->redirect('index.html#contact');
+            $this->redirect('index.php#contact');
         }
 
         try {
@@ -36,10 +36,10 @@ class ContactController
             ]);
         } catch (\Exception $e) {
             http_response_code(500);
-            $this->redirect('index.html#contact');
+            $this->redirect('index.php#contact');
         }
 
-        $this->redirect('index.html?contact=success#contact');
+        $this->redirect('index.php?contact=success#contact');
     }
 
     private function validate(string $name, string $phone, string $email, string $question): array

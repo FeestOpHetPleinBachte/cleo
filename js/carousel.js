@@ -1,24 +1,53 @@
-// carousel.js — maakt van elke [data-carousel] een echte carousel:
-// vorige/volgende-knoppen die per kaart doorschuiven en uitgrijzen aan de
-// randen. Zonder JS blijft de track gewoon horizontaal scrollbaar
-// (progressive enhancement).
-
 export function initCarousels() {
   const carousels = document.querySelectorAll("[data-carousel]");
   carousels.forEach(setupCarousel);
+  window.addEventListener("resize", onWindowResize);
 }
 
 function setupCarousel(carousel) {
-  const track = carousel.querySelector("[data-carousel-track]");
+  const track    = carousel.querySelector("[data-carousel-track]");
   const controls = carousel.querySelector("[data-carousel-controls]");
-  const prev = carousel.querySelector("[data-carousel-prev]");
-  const next = carousel.querySelector("[data-carousel-next]");
+  const prev     = carousel.querySelector("[data-carousel-prev]");
+  const next     = carousel.querySelector("[data-carousel-next]");
   if (!track || !controls || !prev || !next) return;
 
-  prev.addEventListener("click", () => moveCarousel(track, -1));
-  next.addEventListener("click", () => moveCarousel(track, 1));
-  track.addEventListener("scroll", () => updateControls(track, controls, prev, next));
-  window.addEventListener("resize", () => updateControls(track, controls, prev, next));
+  prev.addEventListener("click", onPrevClick);
+  next.addEventListener("click", onNextClick);
+  track.addEventListener("scroll", onTrackScroll);
+  refreshCarousel(carousel);
+}
+
+function onPrevClick(event) {
+  const track = findTrack(event.currentTarget);
+  if (track) moveCarousel(track, -1);
+}
+
+function onNextClick(event) {
+  const track = findTrack(event.currentTarget);
+  if (track) moveCarousel(track, 1);
+}
+
+function onTrackScroll(event) {
+  refreshCarousel(event.currentTarget.closest("[data-carousel]"));
+}
+
+function onWindowResize() {
+  const carousels = document.querySelectorAll("[data-carousel]");
+  carousels.forEach(refreshCarousel);
+}
+
+function findTrack(button) {
+  const carousel = button.closest("[data-carousel]");
+  return carousel ? carousel.querySelector("[data-carousel-track]") : null;
+}
+
+function refreshCarousel(carousel) {
+  if (!carousel) return;
+  const track    = carousel.querySelector("[data-carousel-track]");
+  const controls = carousel.querySelector("[data-carousel-controls]");
+  const prev     = carousel.querySelector("[data-carousel-prev]");
+  const next     = carousel.querySelector("[data-carousel-next]");
+  if (!track || !controls || !prev || !next) return;
   updateControls(track, controls, prev, next);
 }
 

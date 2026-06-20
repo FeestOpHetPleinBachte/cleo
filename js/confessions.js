@@ -8,31 +8,39 @@ export function initConfessions() {
 
 function initRecogniseButtons() {
   const buttons = document.querySelectorAll(".confession__recognise");
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => toggleRecognise(button));
-  });
+  buttons.forEach(setupRecogniseButton);
+}
+
+function setupRecogniseButton(button) {
+  button.addEventListener("click", onRecogniseClick);
+}
+
+function onRecogniseClick(event) {
+  toggleRecognise(event.currentTarget);
 }
 
 function toggleRecognise(button) {
   const counter = button.querySelector("[data-recognise-count]");
   if (!counter) return;
-  const active = button.classList.toggle("is-active");
+  const active  = button.classList.toggle("is-active");
   const current = Number.parseInt(counter.textContent, 10) || 0;
   counter.textContent = String(active ? current + 1 : current - 1);
 }
 
 function initConfessionForm() {
   const form = document.querySelector(".confession-form");
-  const list = document.querySelector("[data-feed]");
-  if (!form || !list) return;
-  form.addEventListener("submit", (event) => handleConfessionSubmit(event, form, list));
+  if (!form) return;
+  form.addEventListener("submit", handleConfessionSubmit);
 }
 
-function handleConfessionSubmit(event, form, list) {
+function handleConfessionSubmit(event) {
+  const form  = event.currentTarget;
   const input = form.querySelector(".confession-form__input");
-  const text = input.value.trim();
+  const text  = input.value.trim();
   if (text === "") return; // native required handelt dit verder af
   event.preventDefault();
+  const list = document.querySelector("[data-feed]");
+  if (!list) return;
   list.prepend(buildConfession(text));
   form.reset();
   input.focus();
@@ -47,14 +55,13 @@ function buildConfession(text) {
     `<button class="confession__recognise" type="button">` +
     `<span aria-hidden="true">&check;</span> <span data-recognise-count>0</span></button>`;
   item.querySelector(".confession__text").textContent = text;
-  item.querySelector(".confession__recognise")
-    .addEventListener("click", (event) => toggleRecognise(event.currentTarget));
+  item.querySelector(".confession__recognise").addEventListener("click", onRecogniseClick);
   return item;
 }
 
 function formatNow() {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, "0");
+  const now     = new Date();
+  const hours   = String(now.getHours()).padStart(2, "0");
   const minutes = String(now.getMinutes()).padStart(2, "0");
   return `${hours}u${minutes}`;
 }

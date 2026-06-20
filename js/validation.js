@@ -3,8 +3,8 @@
 
 const MESSAGES = {
   required: "Dit veld is verplicht.",
-  email: "Vul een geldig e-mailadres in.",
-  phone: "Vul een geldig telefoonnummer in.",
+  email:    "Vul een geldig e-mailadres in.",
+  phone:    "Vul een geldig telefoonnummer in.",
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -12,16 +12,19 @@ const PHONE_PATTERN = /^[0-9+\s()/-]{8,20}$/;
 
 export function initFormValidation() {
   const forms = document.querySelectorAll(".contact-form");
-  forms.forEach((form) => {
-    form.addEventListener("submit", (event) => handleSubmit(event, form));
-  });
+  forms.forEach(setupFormValidation);
 }
 
-function handleSubmit(event, form) {
+function setupFormValidation(form) {
+  form.addEventListener("submit", handleSubmit);
+}
+
+function handleSubmit(event) {
+  const form = event.currentTarget;
   const inputs = form.querySelectorAll(".field__input");
   let firstInvalid = null;
 
-  inputs.forEach((input) => {
+  for (const input of inputs) {
     const error = validateInput(input);
     if (error === "") {
       clearError(input);
@@ -29,7 +32,7 @@ function handleSubmit(event, form) {
       showError(input, error);
       if (firstInvalid === null) firstInvalid = input;
     }
-  });
+  }
 
   if (firstInvalid !== null) {
     event.preventDefault();
@@ -39,11 +42,10 @@ function handleSubmit(event, form) {
 
 function validateInput(input) {
   const value = input.value.trim();
-
   if (input.required && value === "") return MESSAGES.required;
   if (value === "") return "";
   if (input.type === "email" && !EMAIL_PATTERN.test(value)) return MESSAGES.email;
-  if (input.type === "tel" && !PHONE_PATTERN.test(value)) return MESSAGES.phone;
+  if (input.type === "tel"   && !PHONE_PATTERN.test(value))  return MESSAGES.phone;
   return "";
 }
 

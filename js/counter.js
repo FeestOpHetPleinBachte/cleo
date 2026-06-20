@@ -10,7 +10,7 @@ export function initCounter() {
   if (!node) return;
 
   refreshCounter(node);
-  window.setInterval(() => refreshCounter(node), INTERVAL_MS);
+  window.setInterval(refreshCounter.bind(null, node), INTERVAL_MS);
 }
 
 async function refreshCounter(node) {

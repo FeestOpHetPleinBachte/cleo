@@ -11,10 +11,11 @@ const TYPES = {
 export function initQuiz() {
   const form = document.querySelector("[data-quiz]");
   if (!form) return;
-  form.addEventListener("submit", (event) => handleQuizSubmit(event, form));
+  form.addEventListener("submit", handleQuizSubmit);
 }
 
-function handleQuizSubmit(event, form) {
+function handleQuizSubmit(event) {
+  const form = event.currentTarget;
   const choice = readChoice(form);
   if (!choice) return; // laat de native required-melding het werk doen
   event.preventDefault();
